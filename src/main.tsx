@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import UserPage from './pages/UserPage_1'
+import UserPage from './pages/UserPage'
 import AdminPage from './pages/AdminPage'
 import './styles.css'
 

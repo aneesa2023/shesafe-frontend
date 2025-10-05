@@ -11,11 +11,14 @@ interface Incident {
   aiSummary?: string;
   severity?: "low" | "medium" | "high";
   aiRecommendation?: string;
+  conversation?: { sender: "user" | "ai"; text: string }[];
 }
 
 const AdminPage: React.FC = () => {
   const [incidents, setIncidents] = useState<Incident[]>([]);
-  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
+  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(
+    null
+  );
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("incidents") || "[]");
@@ -30,6 +33,19 @@ const AdminPage: React.FC = () => {
     localStorage.setItem("incidents", JSON.stringify(updated));
   };
 
+  const fetchChatHistory = async (incidentId: string) => {
+    const res = await fetch(
+      `http://localhost:8000/incident/${incidentId}/chat`
+    );
+    const data = await res.json();
+    return data;
+  };
+
+  const handleViewDetails = async (incident: Incident) => {
+    const chatHistory = await fetchChatHistory(incident.id);
+    setSelectedIncident({ ...incident, conversation: chatHistory });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navbar */}
@@ -41,7 +57,9 @@ const AdminPage: React.FC = () => {
       {/* Main */}
       <main className="max-w-6xl mx-auto p-6">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Incident Dashboard</h2>
+          <h2 className="text-2xl font-bold text-gray-800">
+            Incident Dashboard
+          </h2>
           <p className="text-gray-600 text-sm">
             Monitor and manage all reported incidents
           </p>
@@ -49,7 +67,9 @@ const AdminPage: React.FC = () => {
 
         <div className="flex flex-wrap items-center justify-between bg-white border rounded-xl p-4 mb-6 shadow-sm">
           <div className="flex gap-3 items-center">
-            <label className="text-sm text-gray-700 font-medium">Filter by Status:</label>
+            <label className="text-sm text-gray-700 font-medium">
+              Filter by Status:
+            </label>
             <select className="border border-gray-300 rounded-md text-sm px-3 py-1.5">
               <option>All Incidents</option>
               <option>Pending</option>
@@ -57,12 +77,16 @@ const AdminPage: React.FC = () => {
               <option>Escalated</option>
             </select>
 
-            <label className="text-sm text-gray-700 font-medium ml-4">Sort by:</label>
+            <label className="text-sm text-gray-700 font-medium ml-4">
+              Sort by:
+            </label>
             <button className="flex items-center border border-gray-300 rounded-md text-sm px-3 py-1.5 hover:bg-gray-100">
               <ChevronDown size={14} className="mr-1" /> Time
             </button>
           </div>
-          <span className="text-sm text-gray-600">{incidents.length} incidents</span>
+          <span className="text-sm text-gray-600">
+            {incidents.length} incidents
+          </span>
         </div>
 
         <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
@@ -77,8 +101,13 @@ const AdminPage: React.FC = () => {
             </thead>
             <tbody>
               {incidents.map((i) => (
-                <tr key={i.id} className="border-b hover:bg-gray-50 transition-all">
-                  <td className="p-3 text-gray-800">{i.text || "(Audio Only)"}</td>
+                <tr
+                  key={i.id}
+                  className="border-b hover:bg-gray-50 transition-all"
+                >
+                  <td className="p-3 text-gray-800">
+                    {i.text || "(Audio Only)"}
+                  </td>
                   <td className="p-3">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -98,7 +127,7 @@ const AdminPage: React.FC = () => {
                   <td className="p-3 text-right">
                     <button
                       className="text-rose-600 hover:text-rose-700 font-medium text-sm"
-                      onClick={() => setSelectedIncident(i)}
+                      onClick={() => handleViewDetails(i)}
                     >
                       View Details
                     </button>
@@ -120,25 +149,73 @@ const AdminPage: React.FC = () => {
       {/* Modal for AI Analysis */}
       {selectedIncident && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6 relative shadow-lg">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 relative shadow-lg overflow-y-auto max-h-[80vh]">
             <button
               className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
               onClick={() => setSelectedIncident(null)}
             >
               <X size={20} />
             </button>
-            <h2 className="text-xl font-bold text-rose-600 mb-3">AI Analysis</h2>
-            <p className="mb-2"><span className="font-semibold">Description:</span> {selectedIncident.text}</p>
+            <h2 className="text-xl font-bold text-rose-600 mb-3">
+              AI Analysis
+            </h2>
+            <p className="mb-2">
+              <span className="font-semibold">Description:</span>{" "}
+              {selectedIncident.text}
+            </p>
             {selectedIncident.aiSummary && (
               <>
-                <p className="mb-2"><span className="font-semibold">Summary:</span> {selectedIncident.aiSummary}</p>
-                <p className="mb-2"><span className="font-semibold">Severity:</span> {selectedIncident.severity}</p>
-                <p className="mb-2"><span className="font-semibold">Recommendation:</span> {selectedIncident.aiRecommendation}</p>
+                <p className="mb-2">
+                  <span className="font-semibold">Summary:</span>{" "}
+                  {selectedIncident.aiSummary}
+                </p>
+                <p className="mb-2">
+                  <span className="font-semibold">Severity:</span>{" "}
+                  <span
+                    className={`font-semibold ${
+                      selectedIncident.severity === "high"
+                        ? "text-red-600"
+                        : selectedIncident.severity === "medium"
+                        ? "text-yellow-600"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {selectedIncident.severity}
+                  </span>
+                </p>
+                <p className="mb-2">
+                  <span className="font-semibold">Recommendation:</span>{" "}
+                  {selectedIncident.aiRecommendation}
+                </p>
               </>
             )}
-            {!selectedIncident.aiSummary && (
-              <p className="text-gray-500">No AI analysis available yet.</p>
-            )}
+
+            {/* Conversation History */}
+            {selectedIncident.conversation &&
+              selectedIncident.conversation.length > 0 && (
+                <div className="border-t mt-4 pt-3">
+                  <h3 className="font-semibold text-gray-700 mb-2">
+                    Conversation History:
+                  </h3>
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {selectedIncident.conversation.map((msg, idx) => (
+                      <div
+                        key={idx}
+                        className={`p-2 rounded-lg text-sm ${
+                          msg.sender === "ai"
+                            ? "bg-rose-50 text-rose-800 self-start"
+                            : "bg-gray-100 text-gray-700 self-end"
+                        }`}
+                      >
+                        <strong>
+                          {msg.sender === "ai" ? "AI: " : "User: "}
+                        </strong>
+                        {msg.text}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
           </div>
         </div>
       )}
