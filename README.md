@@ -1,73 +1,49 @@
-# React + TypeScript + Vite
+# 🌐 CrisisCompanion Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CrisisCompanion is an **AI-powered emergency assistant** designed to analyze, prioritize, and summarize crisis reports in real time.  
+The frontend provides an intuitive interface for users to **submit incidents**, view **AI-generated summaries**, and track **resolution statuses** — powered by Gemini AI and Snowflake APIs.
 
-Currently, two official plugins are available:
+This repository contains the **frontend web app** built with **Vite + React + TypeScript**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🚀 Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🧠 Real-time AI analysis of incidents using Gemini API  
+- 💬 Submit text or audio-based incident details  
+- 📊 Displays summarized incident insights, severity, and recommendations  
+- ⚡ Instant feedback after submission — no page reloads  
+- 🎨 Clean, responsive UI styled with modern CSS (Vite defaults)  
+- 🔄 Communicates seamlessly with backend REST APIs  
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🧩 Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| Component | Technology |
+|------------|-------------|
+| Frontend Framework | React (Vite + TypeScript) |
+| AI Model | Gemini 1.5 Flash via Backend |
+| State Management | useState / useEffect hooks |
+| Styling | CSS / Tailwind (optional) |
+| API Communication | Axios / Fetch |
+| Build Tool | Vite |
+| Deployment (Optional) | Vercel / Netlify |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## ⚙️ Project Setup
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 1. Clone the repository
+```bash
+git clone https://github.com/<your-username>/crisiscompanion-frontend.git
+cd crisiscompanion-frontend
+Install dependencies:
+npm install
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+ Run the app
+ npm run dev
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+ Now visit:
+👉 http://localhost:5173
+
